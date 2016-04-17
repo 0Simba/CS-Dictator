@@ -13,8 +13,18 @@ def standarize_variables_declaration (string) :
 
 
 
-def maximum_letter_per_declarations_keys (declarations) :
-    a = 1
+def maximum_letters_per_declarations_keys (declarations) :
+    lengths = [];
+
+    for i in range(len(declarations[0])) :
+        lengths.append(len(declarations[0][i]))
+
+    for i in range(len(declarations)) :
+        for j in range(len(declarations[i])) :
+            lengths[j] = max(lengths[j], len(declarations[i][j]))
+
+    return lengths
+
 
 
 
@@ -47,38 +57,40 @@ def splited_declarations_code (code) :
 
 
 
+def declarations_to_code_in_table (declarations) :
+    words_declaration_lengths = maximum_letters_per_declarations_keys(declarations)
+    code                      = ""
+
+    for i in range(len(declarations)) :
+        line = declarations[i]
+        if (i != 0) :
+            code += "\n"
+
+        for j in range(len(line)) :
+            word         = line[j]
+            code         += word
+            space_needed = words_declaration_lengths[j] - len(word)
+
+            if (len(line) - 1 != j) :
+                space_needed += 1
+                
+
+            for _ in range(space_needed) :
+                code += ' '
+
+
+    return code
 
 
 
-class CsDictatorCommand (sublime_plugin.TextCommand):
+
+class TestCommand (sublime_plugin.TextCommand):
     def run (self, edit):
 
         code                      = selection_to_standard_code(self)
         declarations              = splited_declarations_code(code)
-        words_declaration_lengths = maximum_letter_per_declarations_keys(declarations)
+        code_in_table             = declarations_to_code_in_table(declarations);
 
 
-        self.view.insert(edit, 0, string)
-
-
-
-
-
-
-
-
-
-
-
-
-        # parsedString = [""];
-
-        # for region in sel:
-        #     parsedString = 
-
-
-        # for i in range(len(parsedString)):
-        #     parsedString[i] = "..." + parsedString[i]
-
-
-        # string = "\n".join(parsedString)
+        self.view.insert(edit, 0, code_in_table)
+        
